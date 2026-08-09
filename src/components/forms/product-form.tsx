@@ -33,8 +33,8 @@ export function ProductForm() {
     [platform],
   )
   const schema = useMemo(() => (template ? deriveFormSchema(template) : null), [template])
-  const form = useForm<ProductFormData>({
-    resolver: schema ? zodResolver(schema as z.ZodType<ProductFormData>) : undefined,
+  const form = useForm<ProductFormData, unknown, ProductFormData>({
+    resolver: schema ? zodResolver(schema as z.ZodType<ProductFormData, ProductFormData>) : undefined,
     defaultValues: {},
   })
 
