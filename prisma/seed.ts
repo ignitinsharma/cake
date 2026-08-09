@@ -15,7 +15,7 @@ async function main() {
     { slug: 'kids-tshirts', name: 'T-Shirts', path: 'Clothing > Kids > T-Shirts', hsn: '6109', gst: 5 },
   ]
   for (const c of cats) {
-    const category = await db.category.upsert({
+    await db.category.upsert({
       where: { slug: c.slug },
       update: {},
       create: { slug: c.slug, name: c.name, path: c.path, defaultHsn: c.hsn, defaultGstRate: c.gst },
