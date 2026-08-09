@@ -32,7 +32,10 @@ export async function createProductAction(data: unknown) {
       brand: v['Brand'] || v['brand_name'] || '',
       categorySlug,
       hsn: v['HSN'] || v['HSN_Code'] || category?.defaultHsn || '6109',
-      gstRate: Number(v['Tax Code'] || v['GST %'] || v['Product_Tax_Code'] || category?.defaultGstRate || 5),
+      gstRate:
+        Number(String(v['Tax Code'] || v['GST %'] || v['Product_Tax_Code'] || '').replace(/[^\d.]/g, '')) ||
+        category?.defaultGstRate ||
+        5,
       variants: {
         create: {
           sku: v['Seller SKU'] || v['Style Code'] || v['part_number'] || '',
