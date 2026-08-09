@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  company      Company?
+  generations  Generation[]
+  products     Product[]
+}
+
+model Company {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  businessName  String
+  gstin         String
+  brandName     String
+  returnAddress String?
+  warehousePin  String?
+  user          User    @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id           String       @id @default(uuid())
+  userId       String
+  title        String
+  description  String
+  brand        String
+  categorySlug String
+  hsn          String
+  gstRate      Float
+  createdAt    DateTime     @default(now())
+  generations  Generation[]
+  user         User         @relation(fields: [userId], references: [id])
+  variants     Variant[]
+}
+
+model Variant {
+  id          String  @id @default(uuid())
+  productId   String
+  sku         String
+  size        String
+  color       String
+  mrp         Float
+  price       Float
+  stock       Int
+  weightGrams Float
+  product     Product @relation(fields: [productId], references: [id])
+}
+
+model Category {
+  id             String                    @id @default(uuid())
+  slug           String                    @unique
+  name           String
+  path           String
+  defaultHsn     String
+  defaultGstRate Float
+  mappings       CategoryPlatformMapping[]
+}
+
+model CategoryPlatformMapping {
+  id                   String   @id
+  categorySlug         String
+  platform             String
+  platformCategoryId   String?
+  platformCategoryPath String
+  category             Category @relation(fields: [categorySlug], references: [slug])
+}
+
+model Generation {
+  id              String   @id @default(uuid())
+  userId          String
+  productId       String
+  platform        String
+  categorySlug    String
+  templateVersion String
+  fileName        String
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  product         Product  @relation(fields: [productId], references: [id])
+}
