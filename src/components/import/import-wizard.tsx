@@ -108,10 +108,16 @@ export function ImportWizard() {
 
   async function load() {
     if (!parsed) return
+    setParseError('')
     setPending(true)
-    setResult(await importProductsAction({ categorySlug, rows: rowsToImport(parsed, mapping) }))
-    setPending(false)
-    setStep(4)
+    try {
+      setResult(await importProductsAction({ categorySlug, rows: rowsToImport(parsed, mapping) }))
+      setPending(false)
+      setStep(4)
+    } catch (e) {
+      setPending(false)
+      setParseError(e instanceof Error ? e.message : 'Could not load the products')
+    }
   }
 
   const previewRows = parsed ? rowsToImport(parsed, mapping) : []
@@ -215,8 +221,9 @@ export function ImportWizard() {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
-            <div className="flex gap-2">
+              </Select>
+              {parseError && <p className="mt-4 text-sm text-brand-danger">{parseError}</p>}
+              <div className="flex gap-2">
               <Button variant="outline" onClick={() => setStep(2)}>
                 Back
               </Button>
