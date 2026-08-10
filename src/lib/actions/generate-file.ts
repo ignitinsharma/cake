@@ -16,7 +16,7 @@ export async function generateFileAction(
   productId: string,
   platform: Platform,
   format: 'csv' | 'xlsx',
-): Promise<{ downloadUrl: string } | { error: string }> {
+): Promise<{ downloadUrl: string; templateVersion: string } | { error: string }> {
   const session = await auth()
   if (!session?.user) return { error: 'Unauthorized' }
   const product = await db.product.findFirst({
@@ -52,5 +52,5 @@ export async function generateFileAction(
       fileName,
     },
   })
-  return { downloadUrl: `/api/generate/${generation.id}?format=${format}` }
+  return { downloadUrl: `/api/generate/${generation.id}?format=${format}`, templateVersion: template.version }
 }

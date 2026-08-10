@@ -31,7 +31,7 @@ export async function createProductAction(data: unknown) {
       description: v['Product Description'] || '',
       brand: v['Brand'] || v['brand_name'] || '',
       categorySlug,
-      hsn: v['HSN'] || v['HSN_Code'] || category?.defaultHsn || '6109',
+      hsn: v['HSN'] || v['HSN_Code'] || category?.defaultHsn || '61091000',
       gstRate:
         Number(String(v['Tax Code'] || v['GST %'] || v['Product_Tax_Code'] || '').replace(/[^\d.]/g, '')) ||
         category?.defaultGstRate ||

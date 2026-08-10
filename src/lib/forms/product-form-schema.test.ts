@@ -21,7 +21,7 @@ describe('product form schema', () => {
       Color: 'Black',
       Stock: '10',
       'Weight (g)': '150',
-      HSN: '6109',
+      HSN: '61091000',
       'Tax Code': '5',
       ...overrides,
     }

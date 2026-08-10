@@ -13,7 +13,7 @@ const product: StandardProduct = {
   title: 'Men Cotton T-Shirt',
   description: 'Soft 100% cotton tee',
   brand: 'MyBrand',
-  hsn: '6109',
+  hsn: '61091000',
   gstRate: 5,
   categoryPath: "Clothing > Men's Wear > T-Shirts",
 }
@@ -169,4 +169,22 @@ describe('rules', () => {
     )
     expect(issues).toEqual([])
   })
+})
+
+/*
+ * Shared rule defaults present on every platform template.
+ */
+describe('shared rules', () => {
+  for (const p of [Platform.FLIPKART, Platform.MYNTRA, Platform.AMAZON, Platform.MEESHO, Platform.SNAPDEAL, Platform.NYKAA, Platform.AJIO, Platform.FIRSTCRY]) {
+    const t = getTemplate(p, 'mens-tshirts')!
+    it(`${p}: GST 0-28, positive price, 8-digit HSN rules exist`, () => {
+      const gst = t.columns.find((c) => c.source === 'gstRate')
+      const price = t.columns.find((c) => c.source === 'price')
+      const hsn = t.columns.find((c) => c.source === 'hsn')
+      expect(gst?.rules?.min).toBe(0)
+      expect(gst?.rules?.max).toBe(28)
+      expect(price?.rules?.min).toBe(1)
+      expect(hsn?.rules?.regex).toBe('^\\d{8}$')
+    })
+  }
 })

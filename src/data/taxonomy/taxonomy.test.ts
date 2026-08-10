@@ -26,7 +26,7 @@ describe('taxonomy', () => {
   })
   it('gives every category HSN and GST defaults', () => {
     for (const c of CATEGORIES) {
-      expect(c.defaultHsn, c.slug).toMatch(/^\d{4}$/)
+      expect(c.defaultHsn, c.slug).toMatch(/^(?:\d{4}|\d{8})$/)
       expect(c.defaultGstRate, c.slug).toBeGreaterThan(0)
     }
   })
