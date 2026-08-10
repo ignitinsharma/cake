@@ -26,9 +26,14 @@ export default async function DashboardPage() {
             {products.length} product{products.length === 1 ? '' : 's'} — generate a file for any platform.
           </p>
         </div>
-        <Link href="/dashboard/new">
-          <Button>Add product</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/dashboard/import">
+            <Button variant="outline">Import products</Button>
+          </Link>
+          <Link href="/dashboard/new">
+            <Button>Add product</Button>
+          </Link>
+        </div>
       </div>
       {products.length === 0 && (
         <Card className="rounded-xl border border-brand-border bg-white p-6 text-center">
