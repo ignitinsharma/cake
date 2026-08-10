@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { db } from './db'
 import { verifyPassword } from './password'
+import { consumeRateLimit } from './rate-limit'
 
 /*
  * auth
@@ -17,6 +18,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = String(credentials?.email ?? '')
         const user = await db.user.findUnique({ where: { email } })
         if (!user) return null
+        const rl = await consumeRateLimit(`login:${email}`, 10, 300_000)
+        if (!rl.ok) return null
         const ok = await verifyPassword(String(credentials?.password ?? ''), user.passwordHash)
         if (!ok) return null
         return { id: user.id, email: user.email }

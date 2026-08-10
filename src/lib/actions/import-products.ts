@@ -2,6 +2,7 @@
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { importRowSchema, type ImportRow } from '@/lib/import/import-schema'
+import { consumeRateLimit } from '@/lib/rate-limit'
 
 /*
  * ImportResult
@@ -28,6 +29,8 @@ export async function importProductsAction(data: {
   })
   if (!session?.user) return failAll('unauthorized')
   const userId = session.user.id as string
+  const rl = await consumeRateLimit(`import:${userId}`, 30, 60_000)
+  if (!rl.ok) return failAll(`Too many requests. Try again in ${rl.retryAfterSec}s.`)
   const category = await db.category.findUnique({ where: { slug: data.categorySlug } })
   if (!category) return failAll('unknown category')
 
