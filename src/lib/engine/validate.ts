@@ -50,8 +50,12 @@ export function checkRules(column: TemplateColumn, value: string): string | null
   if (rules.enum && rules.enum.length > 0 && !rules.enum.includes(value)) {
     return `${column.name} must be one of: ${rules.enum.join(', ')}`
   }
-  if (rules.regex && !new RegExp(rules.regex).test(value)) {
-    return `${column.name} is not in the required format`
+  if (rules.regex) {
+    try {
+      if (!new RegExp(rules.regex).test(value)) return `${column.name} is not in the required format`
+    } catch {
+      return `${column.name} has an invalid format rule`
+    }
   }
   const n = Number(value)
   if (Number.isFinite(n)) {
@@ -99,17 +103,17 @@ export function validateForTemplate(
     if (!column.rules) continue
     if (column.rules.unique) {
       const seen = new Map<string, number>()
-      for (const variant of variants) {
-        const value = fieldValue(column.source, product, variant, column.default)
-        const prev = seen.get(value)
-        if (prev !== undefined) {
+      for (let i = 0; i < variants.length; i++) {
+        const value = fieldValue(column.source, product, variants[i], column.default)
+        const firstRow = seen.get(value)
+        if (firstRow !== undefined) {
           issues.push({
             column: column.name,
-            message: `duplicate SKU in file: ${value} (rows ${prev + 1} and ${seen.size + 1})`,
+            message: `duplicate SKU in file: ${value} (rows ${firstRow} and ${i + 1})`,
           })
           continue
         }
-        seen.set(value, seen.size)
+        seen.set(value, i + 1)
       }
       continue
     }

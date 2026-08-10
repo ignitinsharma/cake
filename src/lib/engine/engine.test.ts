@@ -138,6 +138,28 @@ describe('rules', () => {
     )
     expect(issues.some((i) => i.message.includes('duplicate SKU'))).toBe(true)
   })
+  it('reports the actual row numbers when duplicates interleave (A, A, B, A)', () => {
+    const t = ruleTemplate({ sku: { unique: true } })
+    const issues = validateForTemplate(
+      product,
+      [
+        { ...variants[0], sku: 'A' },
+        { ...variants[0], sku: 'A', size: 'L' },
+        { ...variants[0], sku: 'B', size: 'XL' },
+        { ...variants[0], sku: 'A', size: 'XXL' },
+      ],
+      t,
+    )
+    const dups = issues.filter((i) => i.message.includes('duplicate SKU'))
+    expect(dups).toHaveLength(2)
+    expect(dups[0].message).toContain('rows 1 and 2')
+    expect(dups[1].message).toContain('rows 1 and 4')
+  })
+  it('flags a malformed regex rule instead of throwing', () => {
+    const t = ruleTemplate({ size: { regex: '(' } })
+    const issues = validateForTemplate(product, variants, t)
+    expect(issues.some((i) => i.message.includes('invalid format rule'))).toBe(true)
+  })
   it('passes distinct SKUs (unique: true)', () => {
     const t = ruleTemplate({ sku: { unique: true } })
     const issues = validateForTemplate(
