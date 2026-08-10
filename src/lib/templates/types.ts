@@ -12,6 +12,21 @@ export type TemplateSource =
 export type TemplateColumnType = 'string' | 'number' | 'int'
 
 /*
+ * ColumnRule
+ * Optional per-column validation rules (spec §4.1).
+ * enum: allowed values; regex: format check; min/max: numeric range;
+ * url: must parse as http(s) URL; unique: no duplicates within the file.
+ */
+export interface ColumnRule {
+  enum?: string[]
+  regex?: string
+  min?: number
+  max?: number
+  url?: boolean
+  unique?: boolean
+}
+
+/*
  * TemplateColumn
  * One output column of a platform template.
  */
@@ -21,6 +36,7 @@ export interface TemplateColumn {
   required: boolean
   type: TemplateColumnType
   default?: string
+  rules?: ColumnRule
 }
 
 /*

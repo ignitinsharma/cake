@@ -6,6 +6,7 @@ import { validateForTemplate } from './validate'
 import { buildRows } from './build-rows'
 import { toCSV, toXLSX } from './serialize'
 import { generateFile } from './index'
+import type { ColumnRule, TemplateColumn } from '@/lib/templates/types'
 import * as XLSX from 'xlsx'
 
 const product: StandardProduct = {
@@ -72,5 +73,78 @@ describe('engine', () => {
         expect(out.issues).toEqual([])
       }
     }
+  })
+})
+
+/*
+ * Rule engine: enum, regex, min/max, url, unique-SKU.
+ */
+describe('rules', () => {
+  const template = getTemplate(Platform.FLIPKART, 'mens-tshirts')!
+  const ruleTemplate = (rules: Record<string, ColumnRule | undefined>) => ({
+    ...template,
+    columns: [
+      { name: 'Size', source: 'size', required: true, type: 'string' as const, rules: rules.size },
+      { name: 'Selling Price', source: 'price', required: true, type: 'number' as const, rules: rules.price },
+      { name: 'Image URLs', source: 'images', required: false, type: 'string' as const, rules: rules.images },
+      { name: 'Seller SKU', source: 'sku', required: true, type: 'string' as const, rules: rules.sku },
+    ] satisfies TemplateColumn[],
+  })
+
+  it('flags a value outside an enum', () => {
+    const t = ruleTemplate({ size: { enum: ['S', 'M', 'L'] } })
+    const issues = validateForTemplate(product, [{ ...variants[0], size: 'XL' }], t)
+    expect(issues.some((i) => i.message.includes('Size') && i.message.includes('S, M, L'))).toBe(true)
+  })
+  it('passes a value inside an enum', () => {
+    const t = ruleTemplate({ size: { enum: ['S', 'M', 'L'] } })
+    expect(validateForTemplate(product, [{ ...variants[0], size: 'M' }], t)).toEqual([])
+  })
+  it('flags a value failing a regex (HSN not 8 digits)', () => {
+    const t = ruleTemplate({ size: { regex: '^\\d{8}$' } })
+    const issues = validateForTemplate(product, variants, t)
+    expect(issues.some((i) => i.message.includes('Size'))).toBe(true)
+  })
+  it('flags a price below min (0 allowed, negative rejected)', () => {
+    const t = ruleTemplate({ price: { min: 1 } })
+    const issues = validateForTemplate(product, [{ ...variants[0], price: 0 }], t)
+    expect(issues.some((i) => i.column === 'Selling Price')).toBe(true)
+  })
+  it('flags a price above max', () => {
+    const t = ruleTemplate({ price: { max: 1000 } })
+    const issues = validateForTemplate(product, [{ ...variants[0], price: 9999 }], t)
+    expect(issues.some((i) => i.column === 'Selling Price')).toBe(true)
+  })
+  it('flags a non-URL when url: true', () => {
+    const t = ruleTemplate({ images: { url: true } })
+    const issues = validateForTemplate(product, [...variants], t)
+    expect(issues.some((i) => i.column === 'Image URLs')).toBe(true)
+  })
+  it('passes a valid URL when url: true', () => {
+    const t = ruleTemplate({ images: { url: true } })
+    const issues = validateForTemplate(
+      { ...product },
+      [{ ...variants[0], sku: 'X' }],
+      { ...t, columns: [{ name: 'Image URLs', source: 'images', required: false, type: 'string', default: 'https://cdn.example.com/a.jpg' }] },
+    )
+    expect(issues).toEqual([])
+  })
+  it('flags duplicate SKUs within one file (unique: true)', () => {
+    const t = ruleTemplate({ sku: { unique: true } })
+    const issues = validateForTemplate(
+      product,
+      [variants[0], { ...variants[0], sku: 'TS-BLK-M', size: 'L' }],
+      t,
+    )
+    expect(issues.some((i) => i.message.includes('duplicate SKU'))).toBe(true)
+  })
+  it('passes distinct SKUs (unique: true)', () => {
+    const t = ruleTemplate({ sku: { unique: true } })
+    const issues = validateForTemplate(
+      product,
+      [variants[0], { ...variants[0], sku: 'TS-BLK-L', size: 'L' }],
+      t,
+    )
+    expect(issues).toEqual([])
   })
 })

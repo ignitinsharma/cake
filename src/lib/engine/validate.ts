@@ -1,9 +1,9 @@
-import type { PlatformTemplate } from '@/lib/templates/types'
+import type { PlatformTemplate, TemplateColumn } from '@/lib/templates/types'
 import type { StandardProduct, VariantInput } from '@/lib/products/types'
 
 /*
  * ValidationIssue
- * One missing/blank required field.
+ * One missing/blank required field or one rule violation.
  */
 export interface ValidationIssue {
   column: string
@@ -40,8 +40,44 @@ export function fieldValue(
 }
 
 /*
+ * checkRules
+ * Evaluate one column's rules for one variant value.
+ * @returns an issue message, or null when the value passes
+ */
+export function checkRules(column: TemplateColumn, value: string): string | null {
+  const rules = column.rules
+  if (!rules) return null
+  if (rules.enum && rules.enum.length > 0 && !rules.enum.includes(value)) {
+    return `${column.name} must be one of: ${rules.enum.join(', ')}`
+  }
+  if (rules.regex && !new RegExp(rules.regex).test(value)) {
+    return `${column.name} is not in the required format`
+  }
+  const n = Number(value)
+  if (Number.isFinite(n)) {
+    if (rules.min !== undefined && n < rules.min) {
+      return `${column.name} must be at least ${rules.min}`
+    }
+    if (rules.max !== undefined && n > rules.max) {
+      return `${column.name} must be at most ${rules.max}`
+    }
+  }
+  if (rules.url) {
+    try {
+      const u = new URL(value)
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return `${column.name} must be a valid URL`
+    } catch {
+      return `${column.name} must be a valid URL`
+    }
+  }
+  return null
+}
+
+/*
  * validateForTemplate
- * @returns issues for required columns whose source value is blank
+ * @returns issues for required columns whose source value is blank,
+ * plus rule violations (enum/regex/min/max/url) per column,
+ * plus one issue per duplicate SKU when a unique SKU column exists.
  */
 export function validateForTemplate(
   product: StandardProduct,
@@ -57,6 +93,30 @@ export function validateForTemplate(
         issues.push({ column: column.name, message: `${column.name} is required` })
         break
       }
+    }
+  }
+  for (const column of template.columns) {
+    if (!column.rules) continue
+    if (column.rules.unique) {
+      const seen = new Map<string, number>()
+      for (const variant of variants) {
+        const value = fieldValue(column.source, product, variant, column.default)
+        const prev = seen.get(value)
+        if (prev !== undefined) {
+          issues.push({
+            column: column.name,
+            message: `duplicate SKU in file: ${value} (rows ${prev + 1} and ${seen.size + 1})`,
+          })
+          continue
+        }
+        seen.set(value, seen.size)
+      }
+      continue
+    }
+    for (const variant of variants) {
+      const value = fieldValue(column.source, product, variant, column.default)
+      const msg = checkRules(column, value)
+      if (msg) issues.push({ column: column.name, message: msg })
     }
   }
   return issues

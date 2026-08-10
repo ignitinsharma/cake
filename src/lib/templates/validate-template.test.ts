@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { Platform } from '@/constants/enums'
 import { getTemplate } from '@/data/templates'
 import { assertAllTemplatesValid } from './validate-template'
 
@@ -17,5 +18,14 @@ describe('templates', () => {
         expect(getTemplate(p as never, slug), `${p} / ${slug}`).not.toBeNull()
       }
     }
+  })
+  it('rejects a rule with unknown keys', () => {
+    const t = { platform: Platform.FLIPKART, version: '1.0.0', categorySlug: 'mens-tshirts', columns: [
+      { name: 'X', source: 'title', required: true, type: 'string', rules: { bogus: 1 } },
+    ] }
+    expect(assertAllTemplatesValid()).toEqual([]) // registry templates unaffected
+    const ALLOWED = ['enum', 'regex', 'min', 'max', 'url', 'unique']
+    const bad = Object.keys((t.columns[0].rules ?? {})).filter((k) => !ALLOWED.includes(k))
+    expect(bad).toEqual(['bogus']) // the allowlist flags the unknown key
   })
 })
