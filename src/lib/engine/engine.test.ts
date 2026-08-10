@@ -62,4 +62,15 @@ describe('engine', () => {
     expect(out.csv).toContain('TS-BLK-M')
     expect(out.xlsx.length).toBeGreaterThan(0)
   })
+  it('renders a valid file for every platform and t-shirt category', () => {
+    for (const platform of ['FLIPKART', 'MYNTRA', 'AMAZON', 'MEESHO', 'SNAPDEAL', 'NYKAA', 'AJIO', 'FIRSTCRY']) {
+      for (const slug of ['mens-tshirts', 'womens-tshirts', 'kids-tshirts']) {
+        const t = getTemplate(platform as never, slug)!
+        const out = generateFile(product, variants, t)
+        expect(out.csv).toContain('TS-BLK-M')
+        expect(out.xlsx.length).toBeGreaterThan(0)
+        expect(out.issues).toEqual([])
+      }
+    }
+  })
 })

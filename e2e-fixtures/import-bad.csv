@@ -1,0 +1,4 @@
+Product Title,Product Description,Brand,Seller SKU,MRP,Selling Price,Size,Colour,Stock,Weight (g),HSN,GST %,Category
+Good Tee,Ok tee,TestBrand,CSV-BAD-001,999,599,M,Green,10,180,61091000,5,T-Shirts
+,Missing title,TestBrand,CSV-BAD-002,999,599,M,Green,10,180,61091000,5,T-Shirts
+Bad Price Tee,Free tee,TestBrand,CSV-BAD-003,999,free,M,Green,10,180,61091000,5,T-Shirts

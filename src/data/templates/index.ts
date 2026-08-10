@@ -3,6 +3,26 @@ import type { PlatformTemplate } from '@/lib/templates/types'
 import { flipkartColumns } from './flipkart-t-shirt'
 import { myntraColumns } from './myntra-t-shirt'
 import { amazonColumns } from './amazon-t-shirt'
+import { meeshoColumns } from './meesho-t-shirt'
+import { snapdealColumns } from './snapdeal-t-shirt'
+import { nykaaColumns } from './nykaa-t-shirt'
+import { ajioColumns } from './ajio-t-shirt'
+import { firstcryColumns } from './firstcry-t-shirt'
+
+/*
+ * ALL_PLATFORMS
+ * Every platform with a registered template.
+ */
+export const ALL_PLATFORMS: Platform[] = [
+  Platform.FLIPKART,
+  Platform.MYNTRA,
+  Platform.AMAZON,
+  Platform.MEESHO,
+  Platform.SNAPDEAL,
+  Platform.NYKAA,
+  Platform.AJIO,
+  Platform.FIRSTCRY,
+]
 
 /*
  * T_SHIRT_SLUGS
@@ -19,6 +39,11 @@ const REGISTRY: PlatformTemplate[] = [
   { platform: Platform.FLIPKART, columns: flipkartColumns },
   { platform: Platform.MYNTRA, columns: myntraColumns },
   { platform: Platform.AMAZON, columns: amazonColumns },
+  { platform: Platform.MEESHO, columns: meeshoColumns },
+  { platform: Platform.SNAPDEAL, columns: snapdealColumns },
+  { platform: Platform.NYKAA, columns: nykaaColumns },
+  { platform: Platform.AJIO, columns: ajioColumns },
+  { platform: Platform.FIRSTCRY, columns: firstcryColumns },
 ].flatMap((p) =>
   T_SHIRT_SLUGS.map((categorySlug) => ({ platform: p.platform, version: '1.0', categorySlug, columns: p.columns })),
 )

@@ -24,6 +24,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <Link href="/dashboard/history" className="text-brand-foreground-muted hover:text-brand-foreground">
               History
             </Link>
+            <Link href="/dashboard/import" className="text-brand-foreground-muted hover:text-brand-foreground">
+              Import
+            </Link>
             <span className="hidden text-brand-foreground-muted sm:inline">{session.user?.email}</span>
             <form
               action={async () => {
