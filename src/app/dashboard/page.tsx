@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { Platform } from '@/constants/enums'
+import { ALL_PLATFORMS } from '@/data/templates'
 import { GenerateButtons } from '@/components/dashboard/generate-buttons'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -47,7 +47,7 @@ export default async function DashboardPage() {
                   {p.brand} · {p.variants.length} variant{p.variants.length === 1 ? '' : 's'} · {p.categorySlug}
                 </p>
               </div>
-              <GenerateButtons productId={p.id} platforms={[Platform.FLIPKART, Platform.MYNTRA, Platform.AMAZON]} />
+              <GenerateButtons productId={p.id} platforms={ALL_PLATFORMS} />
             </div>
           </Card>
         ))}

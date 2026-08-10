@@ -11,10 +11,10 @@ describe('templates', () => {
   it('all templates are valid', () => {
     expect(assertAllTemplatesValid()).toEqual([])
   })
-  it('exposes the t-shirt template for all 3 platforms and categories', () => {
-    for (const p of ['FLIPKART', 'MYNTRA', 'AMAZON']) {
+  it('exposes the t-shirt template for all 8 platforms and 3 categories', () => {
+    for (const p of ['FLIPKART', 'MYNTRA', 'AMAZON', 'MEESHO', 'SNAPDEAL', 'NYKAA', 'AJIO', 'FIRSTCRY']) {
       for (const slug of ['mens-tshirts', 'womens-tshirts', 'kids-tshirts']) {
-        expect(getTemplate(p as never, slug)).not.toBeNull()
+        expect(getTemplate(p as never, slug), `${p} / ${slug}`).not.toBeNull()
       }
     }
   })
