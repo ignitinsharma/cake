@@ -3,9 +3,16 @@ import * as XLSX from 'xlsx'
 /*
  * toCSV
  * RFC 4180 CSV: quote fields containing comma, quote, CR, or LF.
+ * Formula-injection neutralization (OWASP): cells starting with = + - @
+ * get a leading apostrophe so spreadsheets treat them as text, not formulas.
  */
 export function toCSV(rows: string[][]): string {
-  const esc = (v: string) => (/[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
+  const esc = (v: string) => {
+    const unsafe = /[",\r\n]/.test(v)
+    const formula = /^[=+\-@]/.test(v)
+    const value = formula ? `'${v}` : v
+    return unsafe || formula ? `"${value.replace(/"/g, '""')}"` : value
+  }
   return rows.map((r) => r.map(esc).join(',')).join('\r\n') + '\r\n'
 }
 

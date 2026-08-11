@@ -13,6 +13,13 @@ describe('toNumber', () => {
     expect(toNumber('')).toBeUndefined()
     expect(toNumber('abc')).toBeNull()
   })
+  it('toNumber tolerates non-string input without throwing', () => {
+    expect(toNumber(undefined)).toBeUndefined()
+    // @ts-expect-error crafted payload
+    expect(toNumber(42)).toBeNull()
+    // @ts-expect-error crafted payload
+    expect(toNumber({})).toBeNull()
+  })
 })
 
 describe('importRowSchema', () => {

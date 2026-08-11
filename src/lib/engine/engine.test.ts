@@ -49,6 +49,10 @@ describe('engine', () => {
     const csv = toCSV([['a', 'b'], ['x,y', 'say "hi"', 'line\nbreak']])
     expect(csv).toBe('a,b\r\n"x,y","say ""hi""","line\nbreak"\r\n')
   })
+  it('CSV neutralizes formula-injection cells (= + - @)', () => {
+    const csv = toCSV([['=SUM(A1)', '+123', '-cmd', '@ref', 'safe']])
+    expect(csv).toBe("\"'=SUM(A1)\",\"'+123\",\"'-cmd\",\"'@ref\",safe\r\n")
+  })
   it('XLSX round-trips with header row preserved', () => {
     const rows = buildRows(product, variants, template)
     const buf = toXLSX(rows)
