@@ -47,6 +47,7 @@ export function fieldValue(
 export function checkRules(column: TemplateColumn, value: string): string | null {
   const rules = column.rules
   if (!rules) return null
+  if (value === '') return null
   if (rules.enum && rules.enum.length > 0 && !rules.enum.includes(value)) {
     return `${column.name} must be one of: ${rules.enum.join(', ')}`
   }

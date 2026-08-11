@@ -62,7 +62,7 @@ export async function generateBatchAction(data: {
     return { error: `${issues.length} product(s) failed validation — ${issues[0].product}: ${issues[0].message}` }
   }
 
-  const fileName = `${data.platform.toLowerCase()}-${data.categorySlug}-batch.${data.format}`
+  const fileName = `${data.platform.toLowerCase()}-${data.categorySlug}-batch.${Date.now()}.${data.format}`
   const generations = await db.$transaction(
     products.map((p) =>
       db.generation.create({

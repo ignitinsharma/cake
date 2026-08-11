@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { Platform } from '@/constants/enums'
 import { getTemplate } from '@/data/templates'
 import type { StandardProduct, VariantInput } from '@/lib/products/types'
-import { validateForTemplate } from './validate'
+import { checkRules, validateForTemplate } from './validate'
 import { buildRows } from './build-rows'
 import { toCSV, toXLSX } from './serialize'
 import { generateFile } from './index'
 import type { ColumnRule, TemplateColumn } from '@/lib/templates/types'
+import type { TemplateSource } from '@/lib/templates/types'
 import * as XLSX from 'xlsx'
 
 const product: StandardProduct = {
@@ -94,6 +95,13 @@ describe('rules', () => {
       { name: 'Seller SKU', source: 'sku', required: true, type: 'string' as const, rules: rules.sku },
     ] satisfies TemplateColumn[],
   })
+  const ruleColumn = (source: TemplateSource, rules: ColumnRule) => ({
+    name: 'Image URLs',
+    source,
+    required: false,
+    type: 'string' as const,
+    rules,
+  })
 
   it('flags a value outside an enum', () => {
     const t = ruleTemplate({ size: { enum: ['S', 'M', 'L'] } })
@@ -120,18 +128,14 @@ describe('rules', () => {
     expect(issues.some((i) => i.column === 'Selling Price')).toBe(true)
   })
   it('flags a non-URL when url: true', () => {
-    const t = ruleTemplate({ images: { url: true } })
-    const issues = validateForTemplate(product, [...variants], t)
-    expect(issues.some((i) => i.column === 'Image URLs')).toBe(true)
+    expect(checkRules(ruleColumn('images', { url: true }), 'not a url')).toContain('valid URL')
   })
   it('passes a valid URL when url: true', () => {
-    const t = ruleTemplate({ images: { url: true } })
-    const issues = validateForTemplate(
-      { ...product },
-      [{ ...variants[0], sku: 'X' }],
-      { ...t, columns: [{ name: 'Image URLs', source: 'images', required: false, type: 'string', default: 'https://cdn.example.com/a.jpg' }] },
-    )
-    expect(issues).toEqual([])
+    expect(checkRules(ruleColumn('images', { url: true }), 'https://cdn.example.com/a.jpg')).toBeNull()
+    expect(checkRules(ruleColumn('images', { url: true }), 'ftp://cdn.example.com/a.jpg')).toContain('valid URL')
+  })
+  it('ignores blank values in rules (url)', () => {
+    expect(checkRules(ruleColumn('images', { url: true }), '')).toBeNull()
   })
   it('flags duplicate SKUs within one file (unique: true)', () => {
     const t = ruleTemplate({ sku: { unique: true } })
