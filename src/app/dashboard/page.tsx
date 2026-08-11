@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { ALL_PLATFORMS } from '@/data/templates'
-import { GenerateButtons } from '@/components/dashboard/generate-buttons'
+import { ProductList } from '@/components/dashboard/product-list'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
 /*
  * DashboardPage
- * Product list with per-platform generate actions.
+ * Product list with per-product generate actions and batch selection.
+ * Server component: auth + data only; interaction lives in ProductList.
  */
 export default async function DashboardPage() {
   const session = await auth()
@@ -40,23 +40,15 @@ export default async function DashboardPage() {
           <p className="text-brand-foreground-muted">No products yet — add your first one.</p>
         </Card>
       )}
-      <div className="space-y-4">
-        {products.map((p) => (
-          <Card key={p.id} className="rounded-xl border border-brand-border bg-white p-6">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-              <div className="min-w-0">
-                <Link href={`/dashboard/products/${p.id}`} className="text-xl font-semibold tracking-tight hover:underline">
-                  {p.title}
-                </Link>
-                <p className="mt-1 text-sm text-brand-foreground-muted">
-                  {p.brand} · {p.variants.length} variant{p.variants.length === 1 ? '' : 's'} · {p.categorySlug}
-                </p>
-              </div>
-              <GenerateButtons productId={p.id} platforms={ALL_PLATFORMS} />
-            </div>
-          </Card>
-        ))}
-      </div>
+      <ProductList
+        products={products.map((p) => ({
+          id: p.id,
+          title: p.title,
+          brand: p.brand,
+          categorySlug: p.categorySlug,
+          variantCount: p.variants.length,
+        }))}
+      />
     </div>
   )
 }
