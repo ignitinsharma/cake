@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { PrismaClient } from '@/generated/prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { validateVariantRows, type VariantEditRow } from '@/lib/validations/variant-rows'
-import { updateProductFields } from './update-product'
+import { updateProductFields } from '@/lib/validations/update-product'
 
 vi.mock('@/lib/auth', () => ({ auth: vi.fn() }))
 
