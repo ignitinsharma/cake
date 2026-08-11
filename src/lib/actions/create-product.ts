@@ -40,7 +40,7 @@ export async function createProductAction(data: unknown) {
         create: {
           sku: v['Seller SKU'] || v['Style Code'] || v['part_number'] || '',
           size: v['Size'] || v['size_name'] || '',
-          color: v['Color'] || v['color_name'] || '',
+          color: v['Color'] || v['Colour'] || v['color_name'] || '',
           mrp: Number(v['MRP'] || 0),
           price: Number(v['Selling Price'] || v['standard_price'] || 0),
           stock: Number(v['Stock'] || v['quantity'] || 0),
