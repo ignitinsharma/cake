@@ -54,6 +54,9 @@ export default async function HistoryPage() {
           </table>
         </div>
       )}
+      <p className="text-xs text-brand-foreground-muted">
+        Downloads re-render from the current template version — the version shown is the one recorded when the file was generated.
+      </p>
     </div>
   )
 }

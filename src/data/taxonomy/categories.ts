@@ -24,11 +24,11 @@ const T = Platform
  * FLIPKART/MYNTRA/AMAZON paths — extend per public-doc research later.
  */
 export const CATEGORIES: TaxonomyCategory[] = [
-  { slug: 'mens-tshirts', name: 'T-Shirts', path: "Clothing > Men's Wear > T-Shirts", defaultHsn: '6109', defaultGstRate: 5,
+  { slug: 'mens-tshirts', name: 'T-Shirts', path: "Clothing > Men's Wear > T-Shirts", defaultHsn: '61091000', defaultGstRate: 5,
     platformPaths: { [T.FLIPKART]: "Men's T-Shirts", [T.MYNTRA]: "Men's Wear > T-Shirts", [T.AMAZON]: 'Apparel > Men > T-Shirts', [T.MEESHO]: "Men's Wear > T-Shirts", [T.SNAPDEAL]: "Men's Clothing > T-Shirts", [T.NYKAA]: 'Men > T-Shirts', [T.AJIO]: "Men's Wear > T-Shirts", [T.FIRSTCRY]: "Boys > Clothing > T-Shirts" } },
-  { slug: 'womens-tshirts', name: 'T-Shirts', path: "Clothing > Women's Wear > T-Shirts", defaultHsn: '6109', defaultGstRate: 5,
+  { slug: 'womens-tshirts', name: 'T-Shirts', path: "Clothing > Women's Wear > T-Shirts", defaultHsn: '61091000', defaultGstRate: 5,
     platformPaths: { [T.FLIPKART]: "Women's T-Shirts", [T.MYNTRA]: "Women's Wear > T-Shirts", [T.AMAZON]: 'Apparel > Women > T-Shirts', [T.MEESHO]: "Women's Wear > T-Shirts", [T.SNAPDEAL]: "Women's Clothing > T-Shirts", [T.NYKAA]: 'Women > T-Shirts', [T.AJIO]: "Women's Wear > T-Shirts", [T.FIRSTCRY]: "Girls > Clothing > T-Shirts" } },
-  { slug: 'kids-tshirts', name: 'T-Shirts', path: 'Clothing > Kids > T-Shirts', defaultHsn: '6109', defaultGstRate: 5,
+  { slug: 'kids-tshirts', name: 'T-Shirts', path: 'Clothing > Kids > T-Shirts', defaultHsn: '61091000', defaultGstRate: 5,
     platformPaths: { [T.FLIPKART]: "Men's T-Shirts", [T.MYNTRA]: 'Kids > T-Shirts', [T.AMAZON]: 'Apparel > Kids > T-Shirts', [T.MEESHO]: 'Kids > T-Shirts', [T.SNAPDEAL]: 'Kids Clothing > T-Shirts', [T.NYKAA]: 'Kids > T-Shirts', [T.AJIO]: 'Kids > T-Shirts', [T.FIRSTCRY]: "Boys > Clothing > T-Shirts" } },
   { slug: 'mens-shirts', name: 'Shirts', path: "Clothing > Men's Wear > Shirts", defaultHsn: '6205', defaultGstRate: 5, platformPaths: { [T.FLIPKART]: "Men's Shirts", [T.MYNTRA]: "Men's Wear > Shirts", [T.AMAZON]: 'Apparel > Men > Shirts' } },
   { slug: 'mens-jeans', name: 'Jeans', path: "Clothing > Men's Wear > Jeans", defaultHsn: '6203', defaultGstRate: 5, platformPaths: { [T.FLIPKART]: "Men's Jeans", [T.MYNTRA]: "Men's Wear > Jeans", [T.AMAZON]: 'Apparel > Men > Jeans' } },
@@ -46,7 +46,7 @@ export const CATEGORIES: TaxonomyCategory[] = [
   { slug: 'womens-kurtas', name: 'Kurtas & Kurtis', path: "Clothing > Women's Wear > Kurtas", defaultHsn: '6204', defaultGstRate: 5 },
   { slug: 'womens-sarees', name: 'Sarees', path: "Clothing > Women's Wear > Sarees", defaultHsn: '5407', defaultGstRate: 5, platformPaths: { [T.FLIPKART]: "Women's Sarees", [T.MYNTRA]: "Women's Wear > Sarees", [T.AMAZON]: 'Apparel > Women > Sarees' } },
   { slug: 'womens-jeans', name: 'Jeans', path: "Clothing > Women's Wear > Jeans", defaultHsn: '6204', defaultGstRate: 5 },
-  { slug: 'womens-tops', name: 'Tops & Tees', path: "Clothing > Women's Wear > Tops", defaultHsn: '6109', defaultGstRate: 5 },
+  { slug: 'womens-tops', name: 'Tops & Tees', path: "Clothing > Women's Wear > Tops", defaultHsn: '61091000', defaultGstRate: 5 },
   { slug: 'womens-skirts', name: 'Skirts', path: "Clothing > Women's Wear > Skirts", defaultHsn: '6204', defaultGstRate: 5 },
   { slug: 'womens-leggings', name: 'Leggings & Jeggings', path: "Clothing > Women's Wear > Leggings", defaultHsn: '6104', defaultGstRate: 5 },
   { slug: 'womens-nightwear', name: 'Nightwear', path: "Clothing > Women's Wear > Nightwear", defaultHsn: '6108', defaultGstRate: 5 },

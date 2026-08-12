@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { Platform } from '@/constants/enums'
 import { GenerateButtons } from '@/components/dashboard/generate-buttons'
+import { ProductEdit } from '@/components/forms/product-edit'
 import { Card } from '@/components/ui/card'
 
 /*
@@ -33,6 +34,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
         <GenerateButtons productId={product.id} platforms={[Platform.FLIPKART, Platform.MYNTRA, Platform.AMAZON]} />
       </div>
+      <ProductEdit product={product} />
       <Card className="rounded-xl border border-brand-border bg-white p-6">
         <h2 className="text-xl font-semibold tracking-tight">Variants</h2>
         <div className="overflow-x-auto">

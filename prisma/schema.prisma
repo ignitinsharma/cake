@@ -75,6 +75,12 @@ model CategoryPlatformMapping {
   category             Category @relation(fields: [categorySlug], references: [slug])
 }
 
+model RateLimit {
+  key         String   @id
+  windowStart DateTime
+  count       Int
+}
+
 model Generation {
   id              String   @id @default(uuid())
   userId          String

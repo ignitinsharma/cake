@@ -27,6 +27,14 @@ export function assertAllTemplatesValid(): string[] {
       if (c.required && !c.default && !(SOURCES as readonly string[]).includes(c.source)) {
         issues.push(`${t.platform}/${t.categorySlug}: required column ${c.name} has no usable source`)
       }
+      const ALLOWED_RULE_KEYS = ['enum', 'regex', 'min', 'max', 'url', 'unique']
+      if (c.rules) {
+        for (const k of Object.keys(c.rules)) {
+          if (!ALLOWED_RULE_KEYS.includes(k)) {
+            issues.push(`${t.platform}/${t.categorySlug}: unknown rule key ${k} on ${c.name}`)
+          }
+        }
+      }
     }
   }
   return issues

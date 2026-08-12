@@ -38,6 +38,16 @@ async function main() {
       mappings++
     }
   }
+  // remove mappings that no longer exist in the taxonomy data (stale paths)
+  const validIds = new Set(
+    CATEGORIES.flatMap((c) => Object.keys(c.platformPaths ?? {}).map((p) => `map-${c.slug}-${p}`)),
+  )
+  const stale = await db.categoryPlatformMapping.findMany({ select: { id: true } })
+  const staleIds = stale.filter((m) => !validIds.has(m.id)).map((m) => m.id)
+  if (staleIds.length > 0) {
+    await db.categoryPlatformMapping.deleteMany({ where: { id: { in: staleIds } } })
+    console.log(`removed ${staleIds.length} stale mappings`)
+  }
   console.log(`seeded ${CATEGORIES.length} categories × ${mappings} mappings`)
   await db.$disconnect()
 }

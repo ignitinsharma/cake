@@ -26,7 +26,8 @@ export interface ImportRow {
  * Empty → undefined (missing); unparseable → null (invalid).
  */
 export function toNumber(raw: string | undefined): number | null | undefined {
-  if (raw == null || raw.trim() === '') return undefined
+  if (typeof raw !== 'string') return raw === undefined ? undefined : null
+  if (raw.trim() === '') return undefined
   const cleaned = raw.replace(/[^\d.\-]/g, '')
   if (cleaned === '') return null
   const n = Number(cleaned)

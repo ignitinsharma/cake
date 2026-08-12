@@ -31,7 +31,7 @@ export async function createProductAction(data: unknown) {
       description: v['Product Description'] || '',
       brand: v['Brand'] || v['brand_name'] || '',
       categorySlug,
-      hsn: v['HSN'] || v['HSN_Code'] || category?.defaultHsn || '6109',
+      hsn: v['HSN'] || v['HSN_Code'] || category?.defaultHsn || '61091000',
       gstRate:
         Number(String(v['Tax Code'] || v['GST %'] || v['Product_Tax_Code'] || '').replace(/[^\d.]/g, '')) ||
         category?.defaultGstRate ||
@@ -40,7 +40,7 @@ export async function createProductAction(data: unknown) {
         create: {
           sku: v['Seller SKU'] || v['Style Code'] || v['part_number'] || '',
           size: v['Size'] || v['size_name'] || '',
-          color: v['Color'] || v['color_name'] || '',
+          color: v['Color'] || v['Colour'] || v['color_name'] || '',
           mrp: Number(v['MRP'] || 0),
           price: Number(v['Selling Price'] || v['standard_price'] || 0),
           stock: Number(v['Stock'] || v['quantity'] || 0),

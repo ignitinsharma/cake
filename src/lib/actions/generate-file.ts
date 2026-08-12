@@ -5,6 +5,7 @@ import { Platform } from '@/constants/enums'
 import { getTemplate } from '@/data/templates'
 import { generateFile } from '@/lib/engine'
 import { resolveCategoryPath } from '@/lib/category-path'
+import { consumeRateLimit } from '@/lib/rate-limit'
 
 /*
  * generateFileAction
@@ -16,9 +17,11 @@ export async function generateFileAction(
   productId: string,
   platform: Platform,
   format: 'csv' | 'xlsx',
-): Promise<{ downloadUrl: string } | { error: string }> {
+): Promise<{ downloadUrl: string; templateVersion: string } | { error: string }> {
   const session = await auth()
   if (!session?.user) return { error: 'Unauthorized' }
+  const rl = await consumeRateLimit(`generate:${session.user.id as string}`, 60, 60_000)
+  if (!rl.ok) return { error: `Too many requests. Try again in ${rl.retryAfterSec}s.` }
   const product = await db.product.findFirst({
     where: { id: productId, userId: session.user.id as string },
     include: { variants: true },
@@ -52,5 +55,5 @@ export async function generateFileAction(
       fileName,
     },
   })
-  return { downloadUrl: `/api/generate/${generation.id}?format=${format}` }
+  return { downloadUrl: `/api/generate/${generation.id}?format=${format}`, templateVersion: template.version }
 }

@@ -11,18 +11,21 @@ import { Button } from '@/components/ui/button'
 export function GenerateButtons({ productId, platforms }: { productId: string; platforms: Platform[] }) {
   const [pending, setPending] = useState<Platform | ''>('')
   const [url, setUrl] = useState('')
+  const [version, setVersion] = useState('')
   const [error, setError] = useState('')
   async function run(p: Platform) {
     setPending(p)
     setError('')
     setUrl('')
+    setVersion('')
     const res = await generateFileAction(productId, p, 'csv')
-    if (!('downloadUrl' in res)) {
-      setError(res.error)
+    if (!('error' in res)) {
+      setUrl(res.downloadUrl)
+      setVersion(res.templateVersion)
       setPending('')
       return
     }
-    setUrl(res.downloadUrl)
+    setError(res.error)
     setPending('')
   }
   return (
@@ -35,9 +38,12 @@ export function GenerateButtons({ productId, platforms }: { productId: string; p
         ))}
       </div>
       {url && (
-        <a className="text-sm font-medium text-brand-primary underline" href={url}>
-          Download file
-        </a>
+        <div className="space-y-1">
+          <a className="text-sm font-medium text-brand-primary underline" href={url}>
+            Download file
+          </a>
+          {version && <p className="text-xs text-brand-foreground-muted">Template v{version}</p>}
+        </div>
       )}
       {error && <p className="text-sm text-brand-danger">{error}</p>}
     </div>
