@@ -6,8 +6,6 @@ import type { PrismaClient } from '@/generated/prisma/client'
  * DB-backed fixed-window counter keyed by string (e.g. `generate:<userId>`).
  * ponytail: fixed window, not sliding; swappable for Upstash behind this file.
  */
-export class RateLimitError extends Error {}
-
 export async function consumeRateLimit(
   key: string,
   limit: number,
@@ -30,20 +28,4 @@ export async function consumeRateLimit(
     return { ok: false, retryAfterSec }
   }
   return { ok: true, retryAfterSec: 0 }
-}
-
-/*
- * checkRateLimit
- * Throws when the window is exhausted — for callers that control their own
- * error surface (API routes), unlike consumeRateLimit which must not throw
- * across the auth boundary.
- */
-export async function checkRateLimit(
-  key: string,
-  limit: number,
-  windowMs: number,
-  prisma: PrismaClient = db,
-): Promise<void> {
-  const r = await consumeRateLimit(key, limit, windowMs, prisma)
-  if (!r.ok) throw new RateLimitError(`Rate limit exceeded. Try again in ${r.retryAfterSec}s.`)
 }
