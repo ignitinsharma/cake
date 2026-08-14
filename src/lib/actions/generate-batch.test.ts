@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Platform } from '@/constants/enums'
 import { getTemplate } from '@/data/templates'
 import type { StandardProduct, VariantInput } from '@/lib/products/types'
-import { allInCategory, buildBatchRows, buildRows, type BatchProduct } from '@/lib/engine/build-rows'
+import { allInCategory, buildBatchRows, buildRows, findDuplicateSkus, type BatchProduct } from '@/lib/engine/build-rows'
 
 /*
  * generateBatchAction
@@ -69,5 +69,47 @@ describe('allInCategory', () => {
   })
   it('rejects a mixed-category selection', () => {
     expect(allInCategory([{ categorySlug: 'mens-tshirts' }, { categorySlug: 'kids-tshirts' }], 'mens-tshirts')).toBe(false)
+  })
+})
+
+/*
+ * findDuplicateSkus
+ * File-wide SKU scan: one `seen` map across all products' variants, in file
+ * order. Row = 1-based file row (header is row 1, first data row is row 2),
+ * matching the per-product duplicate message convention.
+ */
+describe('findDuplicateSkus', () => {
+  it('returns null when every SKU is unique across products', () => {
+    const batch: BatchProduct[] = [
+      { product: product('A'), variants: variants(['A-1', 'A-2']) },
+      { product: product('B'), variants: variants(['B-1', 'B-2']) },
+    ]
+    expect(findDuplicateSkus(batch)).toBeNull()
+  })
+
+  it('reports the colliding product and its file row for a cross-product duplicate', () => {
+    const batch: BatchProduct[] = [
+      { product: product('A'), variants: variants(['X', 'A-2']) },
+      { product: product('B'), variants: variants(['X', 'B-2']) },
+    ]
+    expect(findDuplicateSkus(batch)).toEqual({ sku: 'X', productTitle: 'B', row: 4 })
+  })
+
+  it('reports the first-colliding pair in file order (interleaved)', () => {
+    const batch: BatchProduct[] = [
+      { product: product('A'), variants: variants(['A-1', 'X']) },
+      { product: product('B'), variants: variants(['B-1', 'B-2']) },
+      { product: product('C'), variants: variants(['C-1', 'X']) },
+    ]
+    expect(findDuplicateSkus(batch)).toEqual({ sku: 'X', productTitle: 'C', row: 7 })
+  })
+
+  it('returns null for an empty batch', () => {
+    expect(findDuplicateSkus([])).toBeNull()
+  })
+
+  it('catches a duplicate within a single product', () => {
+    const batch: BatchProduct[] = [{ product: product('A'), variants: variants(['X', 'X']) }]
+    expect(findDuplicateSkus(batch)).toEqual({ sku: 'X', productTitle: 'A', row: 3 })
   })
 })

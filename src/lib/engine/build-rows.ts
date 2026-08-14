@@ -34,6 +34,30 @@ export interface BatchProduct {
 }
 
 /*
+ * findDuplicateSkus
+ * Scans every product's variants in file order with one SKU->productTitle
+ * map. Returns the first colliding pair (first-seen SKU), reporting the
+ * SECOND occurrence: its product title and 1-based file row (header = row 1,
+ * first data row = row 2). Null when every SKU in the file is unique.
+ */
+export function findDuplicateSkus(
+  batch: BatchProduct[],
+): { sku: string; productTitle: string; row: number } | null {
+  const seen = new Map<string, string>()
+  let row = 1
+  for (const { product, variants } of batch) {
+    for (const variant of variants) {
+      row++
+      if (seen.has(variant.sku)) {
+        return { sku: variant.sku, productTitle: product.title, row }
+      }
+      seen.set(variant.sku, product.title)
+    }
+  }
+  return null
+}
+
+/*
  * allInCategory
  * True when every product shares the selected categorySlug (design doc D4).
  */
