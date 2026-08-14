@@ -13,7 +13,7 @@ export const flipkartColumns: TemplateColumn[] = [
   { name: 'MRP', source: 'mrp', required: true, type: 'number' },
   { name: 'Selling Price', source: 'price', required: true, type: 'number', rules: { min: 1 } },
   { name: 'Seller SKU', source: 'sku', required: true, type: 'string', rules: { unique: true } },
-  { name: 'Size', source: 'size', required: true, type: 'string', rules: { enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] } },
+  { name: 'Size', source: 'size', required: true, type: 'string', rules: { enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'] } },
   { name: 'Color', source: 'color', required: true, type: 'string' },
   { name: 'Stock', source: 'stock', required: true, type: 'int' },
   { name: 'Weight (g)', source: 'weightGrams', required: true, type: 'number' },

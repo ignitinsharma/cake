@@ -23,7 +23,8 @@ export interface ImportRow {
 /*
  * toNumber
  * "1,299" → 1299, "GST18" → 18, "₹499" → 499.
- * Empty → undefined (missing); unparseable → null (invalid).
+ * Returns null for missing-as-invalid (non-string non-undefined → null; 'x' → null),
+ * undefined for missing-as-absent ('' or undefined), a number otherwise.
  */
 export function toNumber(raw: string | undefined): number | null | undefined {
   if (typeof raw !== 'string') return raw === undefined ? undefined : null
