@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { Platform } from '@/constants/enums'
 import { GenerateButtons } from '@/components/dashboard/generate-buttons'
+import { ALL_PLATFORMS } from '@/data/templates'
 import { ProductEdit } from '@/components/forms/product-edit'
 import { Card } from '@/components/ui/card'
 
@@ -32,7 +32,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             Brand: {product.brand} · HSN {product.hsn} · GST {product.gstRate}%
           </p>
         </div>
-        <GenerateButtons productId={product.id} platforms={[Platform.FLIPKART, Platform.MYNTRA, Platform.AMAZON]} />
+        <GenerateButtons productId={product.id} platforms={ALL_PLATFORMS} />
       </div>
       <ProductEdit product={product} />
       <Card className="rounded-xl border border-brand-border bg-white p-6">
