@@ -27,22 +27,25 @@ export async function updateCompanyFields(
   const platformSellerIds = Object.fromEntries(
     Object.entries(data.platformSellerIds).filter(([, v]) => v.trim() !== ''),
   )
+  const businessName = data.businessName.trim()
+  const gstin = data.gstin.trim()
+  const brandName = data.brandName.trim()
 
   await prisma.company.upsert({
     where: { userId: data.userId },
     create: {
       userId: data.userId,
-      businessName: data.businessName,
-      gstin: data.gstin,
-      brandName: data.brandName,
+      businessName,
+      gstin,
+      brandName,
       returnAddress: data.returnAddress || null,
       warehousePin: data.warehousePin || null,
       platformSellerIds,
     },
     update: {
-      businessName: data.businessName,
-      gstin: data.gstin,
-      brandName: data.brandName,
+      businessName,
+      gstin,
+      brandName,
       returnAddress: data.returnAddress || null,
       warehousePin: data.warehousePin || null,
       platformSellerIds,
