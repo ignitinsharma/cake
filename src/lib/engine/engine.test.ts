@@ -103,6 +103,10 @@ describe('rules', () => {
     rules,
   })
 
+  it('accepts a 3XL variant on the flipkart template (enum includes 3XL)', () => {
+    const issues = validateForTemplate(product, [{ ...variants[0], size: '3XL' }], template)
+    expect(issues.filter((i) => i.column === 'Size')).toEqual([])
+  })
   it('flags a value outside an enum', () => {
     const t = ruleTemplate({ size: { enum: ['S', 'M', 'L'] } })
     const issues = validateForTemplate(product, [{ ...variants[0], size: 'XL' }], t)

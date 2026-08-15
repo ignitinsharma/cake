@@ -68,9 +68,11 @@ export interface ColumnRule {
 }
 ```
 
-Rules evaluate per (column, variant); `unique` runs once per file across all variants. Issues keep the existing `{ column, message }` shape → wizard/action error paths unchanged.
+Rules evaluate per (column, variant); `unique` is enforced per product within one generated file (each variant's SKU must be unique within its product's variants — every platform template puts `unique: true` on its SKU column). Batch generation enforces file-wide uniqueness across all products' variants via `findDuplicateSkus` (see the Phase 4 debt-sweep design: §B5, 2026-08-12). Issues keep the existing `{ column, message }` shape → wizard/action error paths unchanged.
 
 Shared defaults applied to every template (data, in each template file): price > 0, GST 0–28, HSN 8-digit regex (`^\d{8}$`). Per-platform enums (size lists) added where public docs support them; omitted where unknown (Phase 2 D6 stance — never invent).
+
+**Decision note (D4-3):** the `url` rule (`url?: boolean`) is intentionally not shipped. The amazon template's image column (`main_image_url`) sources from `images`, which is hardcoded `''` in `validate.ts` (products have no image storage), so the rule could never fire; the blank-guard in `validate.ts` already rejects empty source values, preventing future template authors from tripping on it unnoticed. Rule stays in the `ColumnRule` type as the intended escape hatch.
 
 ### 4.2 Batch generation flow
 

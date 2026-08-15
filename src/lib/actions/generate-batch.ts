@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { Platform } from '@/constants/enums'
 import { getTemplate } from '@/data/templates'
-import { allInCategory, type BatchProduct } from '@/lib/engine/build-rows'
+import { allInCategory, findDuplicateSkus, type BatchProduct } from '@/lib/engine/build-rows'
 import { validateForTemplate } from '@/lib/engine/validate'
 import { resolveCategoryPath } from '@/lib/category-path'
 import { consumeRateLimit } from '@/lib/rate-limit'
@@ -60,6 +60,11 @@ export async function generateBatchAction(data: {
   }
   if (issues.length > 0) {
     return { error: `${issues.length} product(s) failed validation — ${issues[0].product}: ${issues[0].message}` }
+  }
+
+  const dup = findDuplicateSkus(batch)
+  if (dup) {
+    return { error: `duplicate SKU in file: ${dup.sku} (${dup.productTitle}, row ${dup.row})` }
   }
 
   const fileName = `${data.platform.toLowerCase()}-${data.categorySlug}-batch.${Date.now()}.${data.format}`

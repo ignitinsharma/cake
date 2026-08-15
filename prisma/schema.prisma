@@ -23,9 +23,10 @@ model Company {
   businessName  String
   gstin         String
   brandName     String
-  returnAddress String?
-  warehousePin  String?
-  user          User    @relation(fields: [userId], references: [id])
+  returnAddress     String?
+  warehousePin      String?
+  platformSellerIds Json?
+  user              User    @relation(fields: [userId], references: [id])
 }
 
 model Product {

@@ -29,6 +29,11 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Known limitations
+
+- Products with legacy 4-digit HSN codes or sizes outside a platform's template enum (e.g. 3XL on Flipkart) fail generation with a clear per-column error. Fix the value in-app via the product edit screen and regenerate.
+- No automatic backfill of missing HSN/GST or size enums by design — corrections stay explicit and user-driven.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

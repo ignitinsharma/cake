@@ -26,8 +26,13 @@ export function BatchBar({ products, selected }: { products: BatchProduct[]; sel
 
   const picked = products.filter((p) => selected.has(p.id))
   const categories = [...new Set(picked.map((p) => p.categorySlug))]
-  const blocked = categories.length !== 1 || platform === ''
+  const blocked = !platform || categories.length !== 1
   const categorySlug = categories.length === 1 ? categories[0] : ''
+  const blockedMessage = !platform
+    ? 'Choose a platform'
+    : categories.length > 1
+      ? `Same category required — selected: ${categories.join(', ')}`
+      : ''
 
   async function run() {
     if (blocked || !categorySlug || !platform) return
@@ -51,7 +56,10 @@ export function BatchBar({ products, selected }: { products: BatchProduct[]; sel
         <span className="font-medium">Batch ({picked.length})</span>
         <select
           value={platform}
-          onChange={(e) => setPlatform(e.target.value as Platform)}
+          onChange={(e) => {
+            setPlatform(e.target.value as Platform)
+            setUrl('')
+          }}
           className="rounded-lg border border-brand-border px-2 py-1 text-sm"
         >
           <option value="">Platform…</option>
@@ -61,7 +69,10 @@ export function BatchBar({ products, selected }: { products: BatchProduct[]; sel
         </select>
         <select
           value={format}
-          onChange={(e) => setFormat(e.target.value as 'csv' | 'xlsx')}
+          onChange={(e) => {
+            setFormat(e.target.value as 'csv' | 'xlsx')
+            setUrl('')
+          }}
           className="rounded-lg border border-brand-border px-2 py-1 text-sm"
         >
           <option value="csv">CSV</option>
@@ -77,9 +88,7 @@ export function BatchBar({ products, selected }: { products: BatchProduct[]; sel
         )}
       </div>
       {blocked && picked.length > 0 && (
-        <p className="mt-2 text-sm text-brand-danger">
-          Same category required — selected: {categories.join(', ')}
-        </p>
+        <p className="mt-2 text-sm text-brand-danger">{blockedMessage}</p>
       )}
       {error && <p className="mt-2 text-sm text-brand-danger">{error}</p>}
     </Card>
