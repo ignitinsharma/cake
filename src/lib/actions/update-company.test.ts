@@ -1,21 +1,21 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { updateCompanyFields } from '@/lib/validations/update-company'
+import { testPrisma } from '@/lib/test-db'
 
 vi.mock('@/lib/auth', () => ({ auth: vi.fn() }))
 
 /*
  * updateCompanyFields
- * In-memory SQLite client mirroring the Company table (same pattern as
- * update-product.test.ts — the real dev.db is never touched).
+ * Postgres client in the `test` schema mirroring the Company table (same
+ * pattern as update-product.test.ts — the real database is never touched).
  */
 
-const p = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: 'file::memory:' }) })
+const p = await testPrisma()
 
 beforeAll(async () => {
+  await p.$executeRawUnsafe('DROP TABLE IF EXISTS "test"."Company" CASCADE')
   await p.$executeRawUnsafe(
-    `CREATE TABLE "Company" (
+    `CREATE TABLE "test"."Company" (
       "id" TEXT NOT NULL PRIMARY KEY,
       "userId" TEXT NOT NULL,
       "businessName" TEXT NOT NULL,
@@ -26,7 +26,7 @@ beforeAll(async () => {
       "platformSellerIds" JSONB
     )`,
   )
-  await p.$executeRawUnsafe(`CREATE UNIQUE INDEX "Company_userId_key" ON "Company"("userId")`)
+  await p.$executeRawUnsafe(`CREATE UNIQUE INDEX "Company_userId_key" ON "test"."Company"("userId")`)
 })
 
 function payload(overrides: Record<string, unknown> = {}) {

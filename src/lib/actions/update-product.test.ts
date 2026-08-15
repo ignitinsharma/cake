@@ -1,25 +1,27 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { validateVariantRows, type VariantEditRow } from '@/lib/validations/variant-rows'
 import { updateProductFields } from '@/lib/validations/update-product'
+import { testPrisma } from '@/lib/test-db'
 
 vi.mock('@/lib/auth', () => ({ auth: vi.fn() }))
 
 /*
  * updateProductAction
- * Pure validation helper + DB core tested against an in-memory SQLite client
- * (same pattern as rate-limit.test.ts — the real dev.db is never touched).
+ * Pure validation helper + DB core tested against a Postgres client in the
+ * `test` schema (same pattern as rate-limit.test.ts — the real database is
+ * never touched).
  */
 
-const p = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: 'file::memory:' }) })
+const p = await testPrisma()
 
 beforeAll(async () => {
+  await p.$executeRawUnsafe('DROP TABLE IF EXISTS "test"."Variant" CASCADE')
+  await p.$executeRawUnsafe('DROP TABLE IF EXISTS "test"."Product" CASCADE')
   await p.$executeRawUnsafe(
-    `CREATE TABLE "Product" ("id" TEXT NOT NULL PRIMARY KEY, "userId" TEXT NOT NULL, "title" TEXT NOT NULL, "description" TEXT NOT NULL, "brand" TEXT NOT NULL, "categorySlug" TEXT NOT NULL, "hsn" TEXT NOT NULL, "gstRate" REAL NOT NULL, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+    `CREATE TABLE "test"."Product" ("id" TEXT NOT NULL PRIMARY KEY, "userId" TEXT NOT NULL, "title" TEXT NOT NULL, "description" TEXT NOT NULL, "brand" TEXT NOT NULL, "categorySlug" TEXT NOT NULL, "hsn" TEXT NOT NULL, "gstRate" REAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
   )
   await p.$executeRawUnsafe(
-    `CREATE TABLE "Variant" ("id" TEXT NOT NULL PRIMARY KEY, "productId" TEXT NOT NULL, "sku" TEXT NOT NULL, "size" TEXT NOT NULL, "color" TEXT NOT NULL, "mrp" REAL NOT NULL, "price" REAL NOT NULL, "stock" INTEGER NOT NULL, "weightGrams" REAL NOT NULL)`,
+    `CREATE TABLE "test"."Variant" ("id" TEXT NOT NULL PRIMARY KEY, "productId" TEXT NOT NULL, "sku" TEXT NOT NULL, "size" TEXT NOT NULL, "color" TEXT NOT NULL, "mrp" REAL NOT NULL, "price" REAL NOT NULL, "stock" INTEGER NOT NULL, "weightGrams" REAL NOT NULL)`,
   )
 })
 

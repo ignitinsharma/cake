@@ -1,16 +1,17 @@
 import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 /*
  * db
  * Prisma client singleton — reuse one connection across the app.
- * Dev SQLite via better-sqlite3 adapter (Prisma 7 driver adapters).
+ * Postgres via pg driver adapter (Prisma 7 driver adapters).
  */
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function createClient(): PrismaClient {
-  const url = process.env.DATABASE_URL ?? 'file:./prisma/dev.db'
-  const adapter = new PrismaBetterSqlite3({ url })
+  const url = process.env.DATABASE_URL
+  if (!url) throw new Error('DATABASE_URL is not set')
+  const adapter = new PrismaPg(url)
   return new PrismaClient({ adapter })
 }
 
